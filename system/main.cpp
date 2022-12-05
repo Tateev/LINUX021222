@@ -1,42 +1,48 @@
 #include <iostream>
-#include <vector>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
-class Node {
-public:
-    int data;
-    Node* left;
-    Node* right;
+void do_command(char* argv[])
+{
+    int child = fork();
 
-    int Search(Node* node, int tiv){
-        if(node <= left);
-            Search(node->left)
-};
+    if (child == 0)
+    {
+        if (execvp(argv[0], argv) < 0) {
+            perror("exec failed");
+            exit(EXIT_FAILURE);
+        }
+        exit(0);
+    }
+    else if (child < 0) {
+        perror("fork failed");
+        exit(1);
+    }
 
-Node *lca(Node *root, int v1,int v2) {
+    int exit_status;
+    waitpid(child, &exit_status, 0);
+
+    if (WIFEXITED(exit_status))
+    {
+        std::cout << "Child exited normally with status code " << WEXITSTATUS(exit_status) << "\n";
+    }
+    else if (WIFSIGNALED(exit_status))
+    {
+        std::cout << "Child process was removed.\n";
+    }
 }
 
-};
-
-
-
-int main() {
-
+int main()
+{
+    char* program[4];
+    program[0] = "ls";
+    program[1] = "-a";
+    program[2] = "-l";
+    program[3] = nullptr;
+    do_command(program);
+    program[0] = "cat";
+    program[1] = "/etc/lsb-release";
+    program[2] = nullptr;
+    do_command(program);
 }
-
-//class Node{
-//private:
-//    std::vector <Node> children = {};
-//    Node *parent;
-//
-//public:
-//
-//        Node(Node const &p){
-//            *parent = p;
-//        }
-//        void AddElement(const Node& newel){
-//            children.push_back(newel);
-//        }
-//
-//};
-
-
